@@ -1,0 +1,8 @@
+node_modules/
+test_output/
+index_modelos/
+Contrato_*.pdf
+test-results/
+playwright-report/
+*.log
+.DS_Store
