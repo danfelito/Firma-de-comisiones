@@ -31,8 +31,8 @@ WORKDIR /app
 # Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm ci --only=production
+# Instalar dependencias (including dev for testing)
+RUN npm install
 
 # Copiar el código
 COPY . .
@@ -40,6 +40,8 @@ COPY . .
 # Crear directorios necesarios
 RUN mkdir -p index_modelos
 
-EXPOSE 3000
+# Render asigna PORT automaticamente
+ENV PORT=10000
+EXPOSE 10000
 
 CMD ["node", "server.js"]
