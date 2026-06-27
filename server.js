@@ -9,9 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Servir el HTML de forma estática
-app.use(express.static(__dirname));
-
 const PUERTO = process.env.PORT || 3000;
 const DIR_INDEXACION = path.join(__dirname, 'index_modelos');
 
@@ -23,12 +20,16 @@ async function inicializarEntorno() {
 }
 
 // Health check endpoint
-app.get('/', (req, res) => {
-    res.json({ status: 'ok', service: 'firma-comisiones', time: new Date().toISOString() });
-});
-
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+// Servir el HTML de forma estática (después del health check)
+app.use(express.static(__dirname));
+
+// Ruta raíz sirve el index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/generar-pdf', async (req, res) => {
@@ -38,21 +39,24 @@ app.post('/generar-pdf', async (req, res) => {
         // 1. Generación de PDF con Puppeteer
         const browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
             executablePath: executablePath
         });
         const page = await browser.newPage();
 
-        // Cargamos el HTML base y rellenamos los datos para la impresión
+        // Cargar el HTML desde el sistema de archivos
         const htmlPath = path.join(__dirname, 'index.html');
-        await page.goto(`file://${htmlPath}`, { waitUntil: 'networkidle0' });
+        const htmlContent = await fs.readFile(htmlPath, 'utf-8');
+        
+        // Inyectar los datos del cliente directamente en el HTML antes de renderizar
+        const htmlWithData = htmlContent
+            .replace(/value=""/g, '')
+            .replace('id="nombreCliente"', `id="nombreCliente" value="${nombre}"`)
+            .replace('id="rfcCliente"', `id="rfcCliente" value="${rfc}"`)
+            .replace('id="curpCliente"', `id="curpCliente" value="${curp}"`)
+            .replace('class="no-print"', 'class="no-print" style="display:none"');
 
-        await page.evaluate((data) => {
-            document.getElementById('nombreCliente').value = data.nombre;
-            document.getElementById('rfcCliente').value = data.rfc;
-            document.getElementById('curpCliente').value = data.curp;
-            document.querySelector('.no-print').style.display = 'none';
-        }, { nombre, rfc, curp });
+        await page.setContent(htmlWithData, { waitUntil: 'networkidle0' });
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
@@ -60,8 +64,6 @@ app.post('/generar-pdf', async (req, res) => {
         // 2. Aplicación de Hash Criptográfico (SHA-256)
         const hash = crypto.createHash('sha256').update(pdfBuffer).digest('hex');
         const nombreArchivo = `Contrato_${rfc}_${Date.now()}.pdf`;
-        const rutaArchivo = path.join(__dirname, nombreArchivo);
-        await fs.writeFile(rutaArchivo, pdfBuffer);
 
         // 3. Indexación para Modelos de IA (Metadatos Estructurados)
         const metadata = {
@@ -71,7 +73,6 @@ app.post('/generar-pdf', async (req, res) => {
             nombre_cliente: nombre,
             fecha_firma: fecha,
             hash_sha256: hash,
-            ruta_archivo: rutaArchivo,
             contexto_legal: "LFPDPPP y Código de Comercio Mexicano",
             listo_para_rag: true
         };
@@ -88,7 +89,7 @@ app.post('/generar-pdf', async (req, res) => {
 
     } catch (error) {
         console.error('Error crítico en el backend:', error);
-        res.status(500).send('Error al generar el documento.');
+        res.status(500).json({ error: 'Error al generar el documento', details: error.message });
     }
 });
 
