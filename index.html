@@ -135,7 +135,7 @@ async function enviarAlBackend() {
     btn.innerText = 'Procesando y cifrando...';
 
     try {
-        const response = await fetch('http://localhost:3000/generar-pdf', {
+        const response = await fetch('/generar-pdf', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, rfc, curp, fecha: new Date().toISOString() })

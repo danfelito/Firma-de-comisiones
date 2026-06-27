@@ -12,19 +12,35 @@ app.use(express.json());
 // Servir el HTML de forma estática
 app.use(express.static(__dirname));
 
-const PUERTO = 3000;
+const PUERTO = process.env.PORT || 3000;
 const DIR_INDEXACION = path.join(__dirname, 'index_modelos');
+
+// Usar Chrome del sistema si está disponible (Docker), si no, el de Puppeteer
+const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
 
 async function inicializarEntorno() {
     await fs.mkdir(DIR_INDEXACION, { recursive: true });
 }
+
+// Health check endpoint
+app.get('/', (req, res) => {
+    res.json({ status: 'ok', service: 'firma-comisiones', time: new Date().toISOString() });
+});
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
 
 app.post('/generar-pdf', async (req, res) => {
     try {
         const { nombre, rfc, curp, fecha } = req.body;
 
         // 1. Generación de PDF con Puppeteer
-        const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
+        const browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+            executablePath: executablePath
+        });
         const page = await browser.newPage();
 
         // Cargamos el HTML base y rellenamos los datos para la impresión
