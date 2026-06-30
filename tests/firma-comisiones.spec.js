@@ -121,3 +121,87 @@ test('Screenshot del formulario lleno (vista previa del documento)', async ({ pa
         fullPage: true 
     });
 });
+
+test('Modal de Aviso de Privacidad Integral funciona', async ({ page }) => {
+    await page.goto('http://localhost:3000/index.html');
+    
+    // Click en el aviso de privacidad abreviado
+    await page.click('.aviso-privacidad');
+    
+    // Verificar que el modal está visible
+    const modal = page.locator('#modalAviso');
+    await expect(modal).toBeVisible();
+    
+    // Verificar el título del modal
+    await expect(page.locator('.modal-header')).toContainText('AVISO DE PRIVACIDAD INTEGRAL');
+    
+    // Verificar contenido del modal
+    await expect(page.locator('#modalAviso')).toContainText('RESPONSABLE DEL TRATAMIENTO DE SUS DATOS PERSONALES');
+    await expect(page.locator('#modalAviso')).toContainText('DERECHOS ARCO');
+    await expect(page.locator('#modalAviso')).toContainText('circulointernacional1@gmail.com');
+    
+    // Cerrar con X
+    await page.click('.modal-close');
+    await expect(modal).not.toBeVisible();
+});
+
+test('Click en subrayado del checkbox abre el aviso de privacidad', async ({ page }) => {
+    await page.goto('http://localhost:3000/index.html');
+    
+    // Verificar que el texto está subrayado
+    const textoSubrayado = page.locator('u');
+    await expect(textoSubrayado).toContainText('AVISO DE PRIVACIDAD (LFPDPPP)');
+    
+    // Click en el texto subrayado debe abrir el modal
+    await textoSubrayado.click();
+    
+    const modal = page.locator('#modalAviso');
+    await expect(modal).toBeVisible();
+    await expect(page.locator('.modal-header')).toContainText('AVISO DE PRIVACIDAD INTEGRAL');
+    
+    // Cerrar modal
+    await page.click('.modal-close');
+    await expect(modal).not.toBeVisible();
+});
+
+test('Fecha actual se muestra en el aviso de privacidad', async ({ page }) => {
+    await page.goto('http://localhost:3000/index.html');
+    
+    // Click para abrir el modal
+    await page.click('.aviso-privacidad');
+    
+    // Verificar que la fecha se actualizó (formato: "29 de junio de 2026")
+    const modal = page.locator('#modalAviso');
+    const fechaElemento = page.locator('#fechaActualizacion');
+    await expect(fechaElemento).toContainText('de');
+    await expect(fechaElemento).toContainText('de');
+    await expect(fechaElemento).not.toHaveText('[Día] de [Mes] de [Año]');
+    
+    // Cerrar modal
+    await page.click('.modal-close');
+});
+
+test('Checkboxes marcados en el PDF generado', async ({ page }) => {
+    await page.goto('http://localhost:3000/index.html');
+    
+    // Llenar formulario completamente
+    await page.fill('#nombreCliente', 'Juan Pérez García');
+    await page.fill('#rfcCliente', RFC_VALIDO);
+    await page.fill('#curpCliente', CURP_VALIDA);
+    await page.check('#aceptaTerminos');
+    await page.check('#aceptaPrivacidad');
+    
+    // Verificar que los checkboxes aparecen marcados antes de generar
+    await expect(page.locator('#aceptaTerminos')).toBeChecked();
+    await expect(page.locator('#aceptaPrivacidad')).toBeChecked();
+    
+    // Generar PDF
+    const [download] = await Promise.all([
+        page.waitForEvent('download', { timeout: 30000 }),
+        page.click('#btnGenerar')
+    ]);
+    
+    // Verificar que el PDF se descargó exitosamente
+    expect(download).toBeTruthy();
+    expect(download.suggestedFilename()).toMatch(/Contrato_PEGJ850415AA1_\d+\.pdf/);
+});
