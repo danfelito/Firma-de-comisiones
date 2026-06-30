@@ -400,15 +400,24 @@ async function enviarAlBackend() {
         });
 
         if (!response.ok) throw new Error('Error en el servidor');
-        
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Contrato_${rfc}_${Date.now()}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        
+        // Solución para móviles iOS Safari que no soportan download de blob
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        if (isIOS) {
+            const url = window.URL.createObjectURL(blob);
+            // Abrir en nueva ventana para forzar descarga en iOS
+            window.open(url, '_blank');
+            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        } else {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Contrato_${rfc}_${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
         alert('Documento generado, hash criptográfico aplicado e indexado en el sistema.');
     } catch (error) {
         alert('Error al conectar con el backend. Asegúrate de que el servidor Node.js esté corriendo.');
