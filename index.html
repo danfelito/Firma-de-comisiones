@@ -394,28 +394,17 @@ async function enviarAlBackend() {
     btn.innerText = 'Procesando y cifrando...';
 
     try {
-        // Intentar generar PDF en el servidor (requiere Chrome)
         const response = await fetch('/generar-pdf', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, rfc, curp, fecha: new Date().toISOString() })
         });
 
-        if (!response.ok) {
-            // Fallback: generar PDF en el cliente con jsPDF
-            generarPDFCliente(nombre, rfc, curp);
-            return;
-        }
+        const contentType = response.headers.get('content-type');
         
-        const blob = await response.blob();
-        
-        // Solución para móviles iOS Safari
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        if (isIOS) {
-            const url = window.URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
-        } else {
+        // Si el backend devuelve PDF (con Chrome), descargar
+        if (contentType && contentType.includes('application/pdf')) {
+            const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -423,8 +412,11 @@ async function enviarAlBackend() {
             document.body.appendChild(a);
             a.click();
             a.remove();
+            alert('Documento generado, hash criptográfico aplicado e indexado en el sistema.');
+        } else {
+            // Fallback: generar PDF en el cliente con jsPDF
+            generarPDFCliente(nombre, rfc, curp);
         }
-        alert('Documento generado, hash criptográfico aplicado e indexado en el sistema.');
     } catch (error) {
         // Fallback: generar PDF en el cliente
         generarPDFCliente(nombre, rfc, curp);
