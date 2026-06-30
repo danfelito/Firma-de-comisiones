@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 // Rate limiting simple (100 requests por IP cada 15 minutos)
 const rateLimitMap = new Map();
 app.use('/generar-pdf', (req, res, next) => {
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = req.headers['x-forwarded-for'] || req.ip || req.connection.remoteAddress;
     const now = Date.now();
     const windowMs = 15 * 60 * 1000;
     const maxRequests = 100;
@@ -48,9 +48,6 @@ app.use('/generar-pdf', (req, res, next) => {
 const PUERTO = process.env.PORT || 3000;
 const DIR_INDEXACION = path.join(__dirname, 'index_modelos');
 
-// Usar Chrome del sistema si está disponible (Docker), si no, el de Puppeteer
-const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
-
 async function inicializarEntorno() {
     await fs.mkdir(DIR_INDEXACION, { recursive: true });
 }
@@ -60,7 +57,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-// Servir el HTML de forma estática (después del health check)
+// Servir el HTML de forma estática
 app.use(express.static(__dirname));
 
 // Ruta raíz sirve el index.html
@@ -75,8 +72,7 @@ app.post('/generar-pdf', async (req, res) => {
         // 1. Generación de PDF con Puppeteer
         const browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
-            executablePath: executablePath
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
         });
         const page = await browser.newPage();
 
@@ -107,7 +103,7 @@ app.post('/generar-pdf', async (req, res) => {
 
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
         
-        // Añadir estilos de impresión para formato corporativo moderno (Linear-inspired dark mode)
+        // Añadir estilos de impresión para formato corporativo moderno
         await page.addStyleTag({
             content: `
                 @page { size: A4; margin: 0; }
