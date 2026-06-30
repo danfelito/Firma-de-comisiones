@@ -1,47 +1,29 @@
-FROM node:20-slim
+FROM node:20-alpine
 
-# Instalar Chromium y dependencias para Puppeteer
-RUN apt-get update && apt-get install -y \
+# Instalar Chrome para Puppeteer
+RUN apk add --no-cache \
     chromium \
-    fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    xdg-utils \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
-# Setear variable de entorno para Puppeteer
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-ENV CHROME_BIN=/usr/bin/chromium
+# Configurar Puppeteer para usar Chrome del sistema
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV CHROMIUM_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
 
 WORKDIR /app
 
-# Copiar package.json y package-lock.json
+# Copiar archivos de package
 COPY package*.json ./
 
-# Instalar dependencias (including dev for testing)
+# Instalar dependencias
 RUN npm install
 
-# Copiar el código
+# Copiar código de la aplicación
 COPY . .
 
-# Crear directorios necesarios
-RUN mkdir -p index_modelos
+EXPOSE 3000
 
-# Render asigna PORT automaticamente
-ENV PORT=10000
-EXPOSE 10000
-
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
