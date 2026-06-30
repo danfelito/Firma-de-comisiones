@@ -18,10 +18,9 @@
         font-feature-settings: "ss03", "cv01";
     }
     .pdf-container { 
-        width: 100%; 
-        max-width: 800px; 
+        width: 750px; 
         margin: 0 auto; 
-        padding: 15px; 
+        padding: 5px; 
         box-sizing: border-box; 
         background: #08090a; 
         color: #e2e4e7; 
@@ -30,16 +29,16 @@
         text-align: center; 
         color: #c41e3a; 
         margin: 2px 0; 
-        font-size: 14pt; 
+        font-size: 12pt; 
         font-weight: 510; 
         letter-spacing: -0.5px;
         border-bottom: 1px solid rgba(196,30,58,0.2);
-        padding-bottom: 6px;
+        padding-bottom: 4px;
     }
     h2 { 
         color: #dc4a67; 
-        margin: 10px 0 4px 0; 
-        font-size: 10pt; 
+        margin: 6px 0 2px 0; 
+        font-size: 9pt; 
         font-weight: 510; 
         letter-spacing: -0.2px;
         border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -47,7 +46,7 @@
     }
     h3 { 
         color: #e87a8f; 
-        font-size: 8pt; 
+        font-size: 7pt; 
         margin: 2px 0; 
         font-weight: 510;
         letter-spacing: -0.1px;
@@ -56,8 +55,8 @@
         text-align: center; 
         font-style: italic; 
         color: #8a8f98; 
-        margin-bottom: 10px; 
-        font-size: 7pt; 
+        margin-bottom: 6px; 
+        font-size: 6pt; 
         font-weight: 300;
     }
     .seccion { 
@@ -231,7 +230,7 @@
         <h2>V. VALIDEZ DE LA FIRMA ELECTRÓNICA Y PROTECCIÓN DE DATOS</h2>
         <p>De conformidad con el Artículo 89 del Código de Comercio, los datos electrónicos consignados en este documento producen los mismos efectos jurídicos que la firma autógrafa.</p>
         <div class="aviso-privacidad" onclick="mostrarAvisoPrivacidad()">
-            <strong>Aviso de Privacidad Abreviado:</strong> En cumplimiento de la LFPDPPP, sus datos personales (Nombre, RFC, CURP) serán utilizados exclusivamente para la prestación de servicios de intermediación inmobiliaria, emisión de facturas y cumplimiento de obligaciones fiscales y legales. <em>(Click para ver integral)</em>
+            <strong>Aviso de Privacidad:</strong> Sus datos (Nombre, RFC, CURP) se usarán para servicios inmobiliarios y facturación. <em>(Click para ver integral)</em>
         </div>
     </div>
 
@@ -438,23 +437,26 @@ function generarPDFCliente(nombre, rfc, curp) {
     
     const elemento = document.querySelector('.pdf-container');
     
+    // Ajustar márgenes para fit en una página
     const opt = {
-        margin: 5,
+        margin: 0,
         filename: `Política_Comisiones_${rfc}.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-            scale: 2,
+            scale: 1.5,
             useCORS: true,
             backgroundColor: '#08090a',
             logging: false,
-            letterRendering: true
+            letterRendering: true,
+            width: 750,
+            windowWidth: 750
         },
         jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
+            unit: 'pt', 
+            format: [792, 1123], 
             orientation: 'portrait' 
         },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        pagebreak: { mode: [] }
     };
     
     html2pdf()
