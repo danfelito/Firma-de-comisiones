@@ -332,6 +332,7 @@
 </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 function mostrarAvisoPrivacidad() {
     document.getElementById('modalAviso').style.display = 'block';
@@ -393,20 +394,25 @@ async function enviarAlBackend() {
     btn.innerText = 'Procesando y cifrando...';
 
     try {
+        // Intentar generar PDF en el servidor (requiere Chrome)
         const response = await fetch('/generar-pdf', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, rfc, curp, fecha: new Date().toISOString() })
         });
 
-        if (!response.ok) throw new Error('Error en el servidor');
+        if (!response.ok) {
+            // Fallback: generar PDF en el cliente con jsPDF
+            generarPDFCliente(nombre, rfc, curp);
+            return;
+        }
+        
         const blob = await response.blob();
         
-        // Solución para móviles iOS Safari que no soportan download de blob
+        // Solución para móviles iOS Safari
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         if (isIOS) {
             const url = window.URL.createObjectURL(blob);
-            // Abrir en nueva ventana para forzar descarga en iOS
             window.open(url, '_blank');
             setTimeout(() => window.URL.revokeObjectURL(url), 1000);
         } else {
@@ -420,12 +426,53 @@ async function enviarAlBackend() {
         }
         alert('Documento generado, hash criptográfico aplicado e indexado en el sistema.');
     } catch (error) {
-        alert('Error al conectar con el backend. Asegúrate de que el servidor Node.js esté corriendo.');
-        console.error(error);
+        // Fallback: generar PDF en el cliente
+        generarPDFCliente(nombre, rfc, curp);
     } finally {
         btn.disabled = false;
         btn.innerText = 'Generar y Firmar Documento Digital';
     }
+}
+
+// Generar PDF en el cliente como fallback (funciona en todos los móviles)
+function generarPDFCliente(nombre, rfc, curp) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Título
+    doc.setFontSize(16);
+    doc.setTextColor(196, 30, 58);
+    doc.text('Círculo Internacional de Bienes Raíces', 105, 20, { align: 'center' });
+    
+    // Subtítulo
+    doc.setFontSize(12);
+    doc.setTextColor(220, 74, 103);
+    doc.text('Política de Comisiones y Honorarios Profesionales', 105, 30, { align: 'center' });
+    
+    // Datos del cliente
+    doc.setFontSize(10);
+    doc.setTextColor(208, 214, 224);
+    doc.text(`Nombre: ${nombre}`, 20, 50);
+    doc.text(`RFC: ${rfc}`, 20, 60);
+    doc.text(`CURP: ${curp}`, 20, 70);
+    doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 20, 80);
+    
+    // Aceptaciones
+    doc.setTextColor(16, 185, 129);
+    doc.text('✓ ACEPTO LA POLÍTICA DE COMISIONES Y LA FIRMA ELECTRÓNICA', 20, 95);
+    doc.text('✓ HE LEÍDO Y ACEPTO EL AVISO DE PRIVACIDAD (LFPDPPP)', 20, 105);
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(98, 102, 109);
+    doc.text('Documento generado electrónicamente con validez legal (Art. 89 Código de Comercio)', 105, 285, { align: 'center' });
+    
+    doc.save(`Contrato_${rfc}.pdf`);
+    alert('Documento generado en tu dispositivo. Guárdalo en la carpeta de documentos.');
 }
 </script>
 </body>
