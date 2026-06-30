@@ -19,9 +19,12 @@
     }
     .pdf-container { 
         width: 100%; 
-        margin: 0; 
-        padding: 0.15in; 
+        max-width: 800px; 
+        margin: 0 auto; 
+        padding: 15px; 
         box-sizing: border-box; 
+        background: #08090a; 
+        color: #e2e4e7; 
     }
     h1 { 
         text-align: center; 
@@ -85,16 +88,6 @@
         margin: 4px 0; 
         font-size: 7pt; 
         color: #d0d6e0; 
-    }
-    .checkmark-box {
-        display: none;
-        color: #10b981;
-        font-weight: bold;
-        margin-left: -18px;
-    }
-    #aceptaTerminos:checked ~ .checkmark-box,
-    #aceptaPrivacidad:checked ~ .checkmark-box {
-        display: inline;
     }
     .firma-box input[type="text"] { 
         width: 100%; 
@@ -184,63 +177,88 @@
     li { margin: 3px 0; }
     p { margin: 4px 0; }
     @media print { 
-        .no-print, button { display: none !important; } 
+        .no-print { display: none !important; }
         body { background: #08090a; color: #e2e4e7; }
-        .pdf-container { padding: 0; }
-        .operacion, .seccion, .firma-box { background: #111; border: 1px solid #333; }
     }
 </style>
 </head>
 <body>
 
 <div class="pdf-container">
-<h1>Círculo Internacional de Bienes Raíces</h1>
-<h2 style="text-align:center;">Política de Comisiones y Honorarios Profesionales</h2>
-<div class="header-info">Origen: Veracruz, México | Actualización: Junio 2026</div>
+    <h1>Círculo Internacional de Bienes Raíces</h1>
+    <h2 style="text-align:center;">Política de Comisiones y Honorarios Profesionales</h2>
+    <div class="header-info">Origen: Veracruz, México | Actualización: Junio 2026</div>
 
-<div class="seccion">
-    <h2>I. OBJETO Y ÁMBITO DE APLICACIÓN</h2>
-    <p>El presente establece los lineamientos, montos, condiciones y términos bajo los cuales Círculo Internacional de Bienes Raíces ("La Inmobiliaria") percibirá el pago de honorarios por servicios de intermediación.</p>
-</div>
-
-<div class="seccion">
-    <h2>II. MARCO LEGAL GENERAL</h2>
-    <p>Este documento se rige bajo las leyes de los Estados Unidos Mexicanos:</p>
-    <ul>
-        <li>Código Civil para el Estado de Veracruz de Ignacio de la Llave.</li>
-        <li>Código de Comercio (Validez de firma electrónica, Art. 89-114).</li>
-        <li>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</li>
-    </ul>
-</div>
-
-<div class="seccion">
-    <h2>III. ESQUEMA DE COMISIONES</h2>
-    <div class="operacion">
-        <h3>Operaciones de Compraventa</h3>
-        <p><strong>Comisión:</strong> 5% + IVA. Calculado sobre el precio final de venta real.</p>
-        <p><strong>Momento del Pago:</strong> 50% al firmar Contrato de Promesa, 50% al firmar Escritura Pública.</p>
+    <div class="seccion">
+        <h2>I. OBJETO Y ÁMBITO DE APLICACIÓN</h2>
+        <p>El presente establece los lineamientos, montos, condiciones y términos bajo los cuales Círculo Internacional de Bienes Raíces ("La Inmobiliaria") percibirá el pago de honorarios por servicios de intermediación.</p>
     </div>
-    <div class="operacion">
-        <h3>Operaciones de Arrendamiento</h3>
-        <p><strong>Comisión:</strong> 1 Mes de Renta. Equivalente al depósito en garantía. No reembolsable.</p>
-        <p><strong>Momento del Pago:</strong> Pago íntegro e inmediato al firmar el Contrato de Arrendamiento.</p>
+
+    <div class="seccion">
+        <h2>II. MARCO LEGAL GENERAL</h2>
+        <p>Este documento se rige bajo las leyes de los Estados Unidos Mexicanos:</p>
+        <ul>
+            <li>Código Civil para el Estado de Veracruz de Ignacio de la Llave.</li>
+            <li>Código de Comercio (Validez de firma electrónica, Art. 89-114).</li>
+            <li>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</li>
+        </ul>
     </div>
-</div>
 
-<div class="seccion">
-    <h2>IV. CONDICIONES DE PAGO Y FACTURACIÓN</h2>
-    <ul>
-        <li><strong>Moneda:</strong> Todos los pagos en Moneda Nacional (MXN).</li>
-        <li><strong>Forma de Pago:</strong> Transferencia electrónica. No se acepta efectivo (apego a LFPIORPI).</li>
-        <li><strong>Facturación:</strong> Se emitirá CFDI por honorarios de intermediación tras recibir el pago.</li>
-    </ul>
-</div>
+    <div class="seccion">
+        <h2>III. ESQUEMA DE COMISIONES</h2>
+        <div class="operacion">
+            <h3>Operaciones de Compraventa</h3>
+            <p><strong>Comisión:</strong> 5% + IVA. Calculado sobre el precio final de venta real.</p>
+            <p><strong>Momento del Pago:</strong> 50% al firmar Contrato de Promesa, 50% al firmar Escritura Pública.</p>
+        </div>
+        <div class="operacion">
+            <h3>Operaciones de Arrendamiento</h3>
+            <p><strong>Comisión:</strong> 1 Mes de Renta. Equivalente al depósito en garantía. No reembolsable.</p>
+            <p><strong>Momento del Pago:</strong> Pago íntegro e inmediato al firmar el Contrato de Arrendamiento.</p>
+        </div>
+    </div>
 
-<div class="seccion">
-    <h2>V. VALIDEZ DE LA FIRMA ELECTRÓNICA Y PROTECCIÓN DE DATOS</h2>
-    <p>De conformidad con el Artículo 89 del Código de Comercio, los datos electrónicos consignados en este documento producen los mismos efectos jurídicos que la firma autógrafa.</p>
-    <div class="aviso-privacidad" onclick="mostrarAvisoPrivacidad()">
-        <strong>Aviso de Privacidad Abreviado:</strong> En cumplimiento de la LFPDPPP, sus datos personales (Nombre, RFC, CURP) serán utilizados exclusivamente para la prestación de servicios de intermediación inmobiliaria, emisión de facturas y cumplimiento de obligaciones fiscales y legales. <em>(Click para ver integral)</em>
+    <div class="seccion">
+        <h2>IV. CONDICIONES DE PAGO Y FACTURACIÓN</h2>
+        <ul>
+            <li><strong>Moneda:</strong> Todos los pagos en Moneda Nacional (MXN).</li>
+            <li><strong>Forma de Pago:</strong> Transferencia electrónica. No se acepta efectivo (apego a LFPIORPI).</li>
+            <li><strong>Facturación:</strong> Se emitirá CFDI por honorarios de intermediación tras recibir el pago.</li>
+        </ul>
+    </div>
+
+    <div class="seccion">
+        <h2>V. VALIDEZ DE LA FIRMA ELECTRÓNICA Y PROTECCIÓN DE DATOS</h2>
+        <p>De conformidad con el Artículo 89 del Código de Comercio, los datos electrónicos consignados en este documento producen los mismos efectos jurídicos que la firma autógrafa.</p>
+        <div class="aviso-privacidad" onclick="mostrarAvisoPrivacidad()">
+            <strong>Aviso de Privacidad Abreviado:</strong> En cumplimiento de la LFPDPPP, sus datos personales (Nombre, RFC, CURP) serán utilizados exclusivamente para la prestación de servicios de intermediación inmobiliaria, emisión de facturas y cumplimiento de obligaciones fiscales y legales. <em>(Click para ver integral)</em>
+        </div>
+    </div>
+
+    <div class="seccion">
+        <h2>VI. ACEPTACIÓN DE TÉRMINOS</h2>
+        <div class="firma-box">
+            <p><strong>Por la Inmobiliaria:</strong> Círculo Internacional de Bienes Raíces</p>
+            <label>Nombre / Razón Social del Cliente:
+                <input type="text" id="nombreCliente" required>
+            </label>
+            <label>RFC (13 caracteres para Persona Física):
+                <input type="text" id="rfcCliente" maxlength="13" pattern="[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}" required style="text-transform: uppercase;">
+            </label>
+            <label>CURP (18 caracteres):
+                <input type="text" id="curpCliente" maxlength="18" pattern="[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9]{2}" required style="text-transform: uppercase;">
+            </label>
+            <label style="color:#10b981; font-weight:bold;">
+                <input type="checkbox" id="aceptaTerminos" checked> ✓ ACEPTADO ACEPTO LA POLÍTICA DE COMISIONES Y LA FIRMA ELECTRÓNICA.
+            </label>
+            <label>
+                <input type="checkbox" id="aceptaPrivacidad" checked> <span style="color:#10b981; font-weight:bold;">✓ ACEPTADO</span> <u style="color:#dc4a67; cursor:pointer;" onclick="mostrarAvisoPrivacidad()">HE LEÍDO Y ACEPTO EL AVISO DE PRIVACIDAD (LFPDPPP)</u>.
+            </label>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 Círculo Internacional de Bienes Raíces. Todos los derechos reservados.</p>
     </div>
 </div>
 
@@ -299,37 +317,9 @@
         </div>
     </div>
 </div>
-</div>
-
-<div class="seccion">
-    <h2>VI. ACEPTACIÓN DE TÉRMINOS</h2>
-    <div class="firma-box">
-        <p><strong>Por la Inmobiliaria:</strong> Círculo Internacional de Bienes Raíces</p>
-        <label>Nombre / Razón Social del Cliente:
-            <input type="text" id="nombreCliente" required>
-        </label>
-        <label>RFC (13 caracteres para Persona Física):
-            <input type="text" id="rfcCliente" maxlength="13" pattern="[A-ZÑ&]{3,4}[0-9]{6}[A-Z0-9]{3}" required style="text-transform: uppercase;">
-        </label>
-        <label>CURP (18 caracteres):
-            <input type="text" id="curpCliente" maxlength="18" pattern="[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9]{2}" required style="text-transform: uppercase;">
-        </label>
-        <label>
-            <input type="checkbox" id="aceptaTerminos" checked> <span style="color:#10b981; font-weight:bold;">✓ ACEPTADO</span> ACEPTO LA POLÍTICA DE COMISIONES Y LA FIRMA ELECTRÓNICA.
-        </label>
-        <label>
-            <input type="checkbox" id="aceptaPrivacidad" checked> <span style="color:#10b981; font-weight:bold;">✓ ACEPTADO</span> <u style="color:#dc4a67; cursor:pointer;" onclick="mostrarAvisoPrivacidad()">HE LEÍDO Y ACEPTO EL AVISO DE PRIVACIDAD (LFPDPPP)</u>.
-        </label>
-    </div>
-</div>
 
 <div class="no-print" style="text-align:center; margin-top:15px;">
     <button class="btn-accion" id="btnGenerar" onclick="enviarAlBackend()">Generar y Firmar Documento Digital</button>
-</div>
-
-<div class="footer">
-    <p>&copy; 2026 Círculo Internacional de Bienes Raíces. Todos los derechos reservados.</p>
-</div>
 </div>
 
 <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
