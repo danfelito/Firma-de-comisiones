@@ -334,6 +334,7 @@
 
 <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 function mostrarAvisoPrivacidad() {
     document.getElementById('modalAviso').style.display = 'block';
@@ -427,67 +428,60 @@ async function enviarAlBackend() {
     }
 }
 
-// Generar PDF en el cliente usando html2canvas (mantiene diseño corporativo exacto)
+// Generar PDF en el cliente usando html2pdf.js (paginación automática)
 function generarPDFCliente(nombre, rfc, curp) {
-    // Ocultar elementos no deseados para el PDF
     const modal = document.getElementById('modalAviso');
     const btnGenerar = document.getElementById('btnGenerar');
     const originalModalDisplay = modal.style.display;
     const originalBtnDisplay = btnGenerar.style.display;
     
-    // Ocultar modal y botón temporalmente
     modal.style.display = 'none';
     btnGenerar.style.display = 'none';
     
-    // Actualizar datos en el formulario para que aparezcan en el PDF
-    const modalContent = document.querySelector('.firma-box');
     const nombreInput = document.getElementById('nombreCliente');
     const rfcInput = document.getElementById('rfcCliente');
     const curpInput = document.getElementById('curpCliente');
     
-    // Llenar datos si están vacíos
     if (!nombreInput.value) nombreInput.value = nombre;
     if (!rfcInput.value) rfcInput.value = rfc;
     if (!curpInput.value) curpInput.value = curp;
     
-    // Capturar el contenedor del PDF
     const elemento = document.querySelector('.pdf-container');
     
-    html2canvas(elemento, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#08090a',
-        logging: false
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jspdf.jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
+    const opt = {
+        margin: 5,
+        filename: `Política_Comisiones_${rfc}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#08090a',
+            logging: false,
+            letterRendering: true
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+    
+    html2pdf()
+        .set(opt)
+        .from(elemento)
+        .save()
+        .then(() => {
+            modal.style.display = originalModalDisplay;
+            btnGenerar.style.display = originalBtnDisplay;
+            alert('Documento generado en tu dispositivo. Guárdalo en la carpeta de documentos.');
+        })
+        .catch(error => {
+            console.error('Error generando PDF:', error);
+            alert('Error al generar el documento. Intentá nuevamente.');
+            modal.style.display = originalModalDisplay;
+            btnGenerar.style.display = originalBtnDisplay;
         });
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const imgX = (pdfWidth - imgWidth * ratio) / 2;
-        const imgY = 0;
-        
-        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-        pdf.save(`Política_Comisiones_${rfc}.pdf`);
-        
-        // Restaurar elementos ocultos
-        modal.style.display = originalModalDisplay;
-        btnGenerar.style.display = originalBtnDisplay;
-        alert('Documento generado en tu dispositivo. Guárdalo en la carpeta de documentos.');
-    }).catch(error => {
-        console.error('Error generando PDF:', error);
-        alert('Error al generar el documento. Intentá nuevamente.');
-        // Restaurar elementos
-        modal.style.display = originalModalDisplay;
-        btnGenerar.style.display = originalBtnDisplay;
-    });
 }
 </script>
 </body>
