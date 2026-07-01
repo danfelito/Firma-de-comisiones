@@ -12,15 +12,15 @@
         margin: 0; 
         padding: 0; 
         color: #e2e4e7; 
-        line-height: 1.5; 
+        line-height: 1.4; 
         background: #08090a; 
-        font-size: 8pt;
+        font-size: 7pt;
         font-feature-settings: "ss03", "cv01";
     }
     .pdf-container { 
-        width: 750px; 
+        width: 595px;
         margin: 0 auto; 
-        padding: 5px; 
+        padding: 15px; 
         box-sizing: border-box; 
         background: #08090a; 
         color: #e2e4e7; 
@@ -29,42 +29,42 @@
         text-align: center; 
         color: #c41e3a; 
         margin: 2px 0; 
-        font-size: 12pt; 
+        font-size: 10pt; 
         font-weight: 510; 
-        letter-spacing: -0.5px;
-        border-bottom: 1px solid rgba(196,30,58,0.2);
-        padding-bottom: 4px;
+        letter-spacing: -0.3px;
+        border-bottom: 1px solid rgba(196,30,58,0.15);
+        padding-bottom: 3px;
     }
     h2 { 
         color: #dc4a67; 
-        margin: 6px 0 2px 0; 
-        font-size: 9pt; 
+        margin: 4px 0 2px 0; 
+        font-size: 8pt; 
         font-weight: 510; 
-        letter-spacing: -0.2px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        padding-bottom: 2px;
+        letter-spacing: -0.1px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        padding-bottom: 1px;
     }
     h3 { 
         color: #e87a8f; 
-        font-size: 7pt; 
+        font-size: 6pt; 
         margin: 2px 0; 
         font-weight: 510;
-        letter-spacing: -0.1px;
+        letter-spacing: 0;
     }
     .header-info { 
         text-align: center; 
         font-style: italic; 
         color: #8a8f98; 
-        margin-bottom: 6px; 
-        font-size: 6pt; 
+        margin-bottom: 4px; 
+        font-size: 5pt; 
         font-weight: 300;
     }
     .seccion { 
-        background: rgba(255,255,255,0.02); 
-        padding: 8px; 
-        margin: 6px 0; 
+        background: rgba(255,255,255,0.01); 
+        padding: 6px; 
+        margin: 4px 0; 
         border-radius: 4px;
-        border-left: 2px solid #c41e3a;
+        border-left: 1px solid rgba(196,30,58,0.3);
     }
     .operacion { 
         background: rgba(255,255,255,0.03); 
@@ -90,8 +90,8 @@
     }
     .firma-box input[type="text"] { 
         width: 100%; 
-        padding: 5px; 
-        margin-top: 2px; 
+        padding: 4px; 
+        margin-top: 1px; 
         border: 1px solid rgba(255,255,255,0.08); 
         background: rgba(255,255,255,0.02); 
         color: #f7f8f8; 
@@ -247,11 +247,11 @@
             <label>CURP (18 caracteres):
                 <input type="text" id="curpCliente" maxlength="18" pattern="[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[A-Z0-9]{2}" required style="text-transform: uppercase;">
             </label>
-            <label style="color:#10b981; font-weight:bold;">
-                <input type="checkbox" id="aceptaTerminos" checked> ✓ ACEPTADO ACEPTO LA POLÍTICA DE COMISIONES Y LA FIRMA ELECTRÓNICA.
+            <label>
+                <input type="checkbox" id="aceptaTerminos" checked> ✓ ACEPTO LA POLÍTICA DE COMISIONES Y LA FIRMA ELECTRÓNICA.
             </label>
             <label>
-                <input type="checkbox" id="aceptaPrivacidad" checked> <span style="color:#10b981; font-weight:bold;">✓ ACEPTADO</span> <u style="color:#dc4a67; cursor:pointer;" onclick="mostrarAvisoPrivacidad()">HE LEÍDO Y ACEPTO EL AVISO DE PRIVACIDAD (LFPDPPP)</u>.
+                <input type="checkbox" id="aceptaPrivacidad" checked> ✓ <span onclick="mostrarAvisoPrivacidad()" style="cursor: pointer;">HE LEÍDO Y ACEPTO EL AVISO DE PRIVACIDAD (LFPDPPP)</span>.
             </label>
         </div>
     </div>
@@ -417,7 +417,7 @@ async function enviarAlBackend() {
     }
 }
 
-// Generar PDF en el cliente usando html2pdf.js (paginación automática)
+// Generar PDF en el cliente usando html2pdf.js (paginas automaticas)
 function generarPDFCliente(nombre, rfc, curp) {
     const modal = document.getElementById('modalAviso');
     const btnGenerar = document.getElementById('btnGenerar');
@@ -437,43 +437,33 @@ function generarPDFCliente(nombre, rfc, curp) {
     
     const elemento = document.querySelector('.pdf-container');
     
-    // Ajustar márgenes para fit en una página
     const opt = {
         margin: 0,
         filename: `Política_Comisiones_${rfc}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-            scale: 1.5,
+            scale: 1.8,
             useCORS: true,
             backgroundColor: '#08090a',
-            logging: false,
-            letterRendering: true,
-            width: 750,
-            windowWidth: 750
+            logging: false
         },
         jsPDF: { 
-            unit: 'pt', 
-            format: [792, 1123], 
-            orientation: 'portrait' 
-        },
-        pagebreak: { mode: [] }
+            unit: 'pt',
+            format: [595, 842],
+            orientation: 'portrait'
+        }
     };
     
-    html2pdf()
-        .set(opt)
-        .from(elemento)
-        .save()
-        .then(() => {
-            modal.style.display = originalModalDisplay;
-            btnGenerar.style.display = originalBtnDisplay;
-            alert('Documento generado en tu dispositivo. Guárdalo en la carpeta de documentos.');
-        })
-        .catch(error => {
-            console.error('Error generando PDF:', error);
-            alert('Error al generar el documento. Intentá nuevamente.');
-            modal.style.display = originalModalDisplay;
-            btnGenerar.style.display = originalBtnDisplay;
-        });
+    html2pdf().set(opt).from(elemento).save().then(() => {
+        modal.style.display = originalModalDisplay;
+        btnGenerar.style.display = originalBtnDisplay;
+        alert('Documento generado en tu dispositivo. Guárdalo en la carpeta de documentos.');
+    }).catch(error => {
+        console.error('Error generando PDF:', error);
+        alert('Error al generar el documento. Intentá nuevamente.');
+        modal.style.display = originalModalDisplay;
+        btnGenerar.style.display = originalBtnDisplay;
+    });
 }
 </script>
 </body>

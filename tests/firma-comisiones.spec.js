@@ -145,15 +145,15 @@ test('Modal de Aviso de Privacidad Integral funciona', async ({ page }) => {
     await expect(modal).not.toBeVisible();
 });
 
-test('Click en subrayado del checkbox abre el aviso de privacidad', async ({ page }) => {
+test('Click en texto clickable abre el aviso de privacidad', async ({ page }) => {
     await page.goto('http://localhost:3000/index.html');
     
-    // Verificar que el texto está subrayado
-    const textoSubrayado = page.locator('u');
-    await expect(textoSubrayado).toContainText('AVISO DE PRIVACIDAD (LFPDPPP)');
+    // Verificar que el texto es clicable (tiene cursor: pointer)
+    const textoClickable = page.locator('span[style*="cursor: pointer"]');
+    await expect(textoClickable).toContainText('AVISO DE PRIVACIDAD');
     
-    // Click en el texto subrayado debe abrir el modal
-    await textoSubrayado.click();
+    // Click en el texto debe abrir el modal
+    await textoClickable.click();
     
     const modal = page.locator('#modalAviso');
     await expect(modal).toBeVisible();
