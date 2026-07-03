@@ -72,7 +72,9 @@ app.post('/generar-pdf', async (req, res) => {
         // 1. Generación de PDF con Puppeteer
         const browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--single-process'],
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+            timeout: 60000
         });
         const page = await browser.newPage();
 
@@ -101,7 +103,7 @@ app.post('/generar-pdf', async (req, res) => {
         // Ocultar elementos no deseados en PDF
         htmlContent = htmlContent.replace('class="no-print"', 'class="no-print" style="display:none"');
 
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 60000 });
         
         // Añadir estilos de impresión para formato corporativo moderno
         await page.addStyleTag({

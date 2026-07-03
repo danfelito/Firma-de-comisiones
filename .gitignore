@@ -1,10 +1,13 @@
 node_modules/
 test_output/
-index_modelos/
-Contrato_*.pdf
 test-results/
 playwright-report/
+index_modelos/
+Contrato_*.pdf
 *.log
 .DS_Store
-
-.vercel
+.vercel/
+data/
+src/
+facebook-marketplace-auto/
+*.png
