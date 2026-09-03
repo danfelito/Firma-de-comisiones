@@ -138,7 +138,7 @@ test('Modal de Aviso de Privacidad Integral funciona', async ({ page }) => {
     // Verificar contenido del modal
     await expect(page.locator('#modalAviso')).toContainText('RESPONSABLE DEL TRATAMIENTO DE SUS DATOS PERSONALES');
     await expect(page.locator('#modalAviso')).toContainText('DERECHOS ARCO');
-    await expect(page.locator('#modalAviso')).toContainText('circulointernacional1@gmail.com');
+    await expect(page.locator('#modalAviso')).toContainText('contacto@circulointernacionalveracruz.org');
     
     // Cerrar con X
     await page.click('.modal-close');
