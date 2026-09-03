@@ -105,31 +105,14 @@ app.post('/generar-pdf', async (req, res) => {
 
         await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 60000 });
         
-        // Añadir estilos de impresión para formato corporativo moderno
-        await page.addStyleTag({
-            content: `
-                @page { size: A4; margin: 0; }
-                html, body { margin: 0; padding: 0; overflow: hidden; background: #08090a; }
-                body { font-family: 'Inter', system-ui, sans-serif; font-feature-settings: "ss03", "cv01"; }
-                .pdf-container { padding: 0; width: 100%; box-sizing: border-box; }
-                h1 { font-size: 14pt; margin: 2px 0; font-weight: 510; letter-spacing: -0.5px; border-bottom: 1px solid rgba(196,30,58,0.2); padding-bottom: 6px; }
-                h2 { font-size: 10pt; margin: 10px 0 4px 0; font-weight: 510; letter-spacing: -0.2px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
-                h3 { font-size: 8pt; margin: 2px 0; font-weight: 510; letter-spacing: -0.1px; }
-                .header-info { margin: 10px 0; font-size: 7pt; font-weight: 300; }
-                .seccion { padding: 6px; margin: 6px 0; background: rgba(255,255,255,0.02); border-radius: 4px; }
-                .operacion { padding: 6px; margin: 3px 0; font-size: 7pt; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }
-                .firma-box { padding: 6px; margin: 6px 0; font-size: 7pt; border-radius: 6px; }
-                .aviso-privacidad { font-size: 6pt; padding: 6px; margin-top: 6px; border-radius: 4px; }
-                p, li, label { margin: 1px 0; font-size: 7pt; }
-                ul { padding-left: 20px; }
-                li { margin: 3px 0; }
-                .btn-accion { display: none !important; }
-            `
-        });
+        // El documento y el PDF comparten la misma identidad visual y estilos de impresión.
+        await page.emulateMediaType('print');
+        await page.evaluate(() => document.fonts.ready);
 
         const pdfBuffer = await page.pdf({ 
             format: 'A4', 
             printBackground: true,
+            preferCSSPageSize: true,
             margin: { top: '0.5in', right: '0.5in', bottom: '0.5in', left: '0.5in' }
         });
         await browser.close();
